@@ -91,7 +91,7 @@ Embed images and text into a shared vector space directly. Images and text chunk
 Problem: CLIP's image and text embedding spaces are aligned but not identical — retrieval quality degrades for business documents and logos. ChromaDB's cosine similarity also works better with a single consistent embedding space. Adds complexity to the retrieval layer.
 
 **Option B — Vision LLM descriptions (our choice)**
-Send each image to Llama 3.2 Vision at upload time, get back a text description. Embed the description as text alongside all other chunks.
+Send each image to Qwen 3.8 27B (vision) at upload time, get back a text description. Embed the description as text alongside all other chunks.
 
 > "Everything ends up in the same vector space — text, tables, and image descriptions are all embedded with the same MiniLM model. Retrieval logic stays simple. The descriptions are also human-readable so you can audit what the system understood about each image. The only cost is one extra LLM call per image at upload time, which is acceptable."
 

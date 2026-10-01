@@ -1,4 +1,5 @@
 import json
+import re
 import base64
 from groq import Groq
 from app.config import settings
@@ -46,7 +47,10 @@ def describe_image(img_bytes: bytes, ext: str) -> str:
             ],
             max_tokens=200,
         )
-        return response.choices[0].message.content.strip()
+        content = response.choices[0].message.content or ""
+        # Strip Qwen chain-of-thought blocks if present
+        content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
+        return content.strip()
 
     except Exception as e:
         # Vision call failed — return minimal description rather than crashing

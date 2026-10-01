@@ -104,3 +104,50 @@ def get_all_chunks(company_id: str) -> list[str]:
 
     all_docs = collection.get()
     return all_docs["documents"] or []
+
+
+def delete_company(company_id: str) -> bool:
+    client = _get_client()
+    try:
+        client.delete_collection(name=_collection_name(company_id))
+        return True
+    except Exception:
+        return False
+
+
+def list_companies() -> list[dict]:
+    client = _get_client()
+    try:
+        collections = client.list_collections()
+    except Exception:
+        return []
+
+    result = []
+    for col in collections:
+        name = col.name if isinstance(col, str) else col.name
+        if not name.startswith("company_"):
+            continue
+        try:
+            collection = client.get_collection(name)
+            all_data = collection.get(include=["metadatas"])
+            metadatas = all_data["metadatas"] or []
+        except Exception:
+            continue
+
+        company_id = metadatas[0]["company_id"] if metadatas else name[len("company_"):].replace("_", "-")
+        role = metadatas[0]["role"] if metadatas else "unknown"
+        chunk_types: dict[str, int] = {}
+        for m in metadatas:
+            ct = m.get("chunk_type", "text")
+            chunk_types[ct] = chunk_types.get(ct, 0) + 1
+
+        result.append({
+            "company_id": company_id,
+            "role": role,
+            "total_chunks": len(metadatas),
+            "text_chunks": chunk_types.get("text", 0),
+            "table_chunks": chunk_types.get("table", 0),
+            "image_descriptions": chunk_types.get("image_description", 0),
+        })
+
+    return result

@@ -8,8 +8,8 @@ from app.models.schemas import (
     CompanyRole, UploadResponse, GenerateRequest, GenerateResponse
 )
 from app.services.pdf_extractor import extract_pdf
-from app.services.vector_store import store_chunks, retrieve_chunks, get_all_chunks, _get_embedder
-from app.services.image_store import init_db, store_image, get_images_for_company, get_image_with_ext
+from app.services.vector_store import store_chunks, retrieve_chunks, get_all_chunks, list_companies, delete_company, _get_embedder
+from app.services.image_store import init_db, store_image, get_images_for_company, get_image_counts, delete_company_images, get_image_with_ext
 from app.services.generator import describe_image, generate_article
 from app.utils.chunker import chunk_text, estimate_tokens
 
@@ -180,6 +180,29 @@ def get_image(image_id: str):
     img_bytes, ext = result
     media_type = f"image/{'jpeg' if ext in ('jpg', 'jpeg') else ext}"
     return Response(content=img_bytes, media_type=media_type)
+
+
+# ── Companies ─────────────────────────────────────────────────────────────────
+
+@app.get("/companies")
+def companies():
+    """List all companies that have been indexed, with chunk and image counts."""
+    rows = list_companies()
+    image_counts = get_image_counts()
+    for row in rows:
+        row["images"] = image_counts.get(row["company_id"], 0)
+    return {"companies": rows}
+
+
+# ── Delete company ────────────────────────────────────────────────────────────
+
+@app.delete("/companies/{company_id}")
+def delete_company_endpoint(company_id: str):
+    deleted_vectors = delete_company(company_id)
+    deleted_images = delete_company_images(company_id)
+    if not deleted_vectors:
+        raise HTTPException(status_code=404, detail=f"Company '{company_id}' not found")
+    return {"deleted": company_id, "images_removed": deleted_images}
 
 
 # ── Health check ──────────────────────────────────────────────────────────────

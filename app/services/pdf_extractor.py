@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import pymupdf as fitz
 import base64
 from dataclasses import dataclass, field
 

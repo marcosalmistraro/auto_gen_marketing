@@ -9,7 +9,7 @@ load_dotenv()
 class Settings:
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
     llm_model: str = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
-    vision_model: str = os.getenv("VISION_MODEL", "llama-3.2-11b-vision-preview")
+    vision_model: str = os.getenv("VISION_MODEL", "qwen/qwen3.8-27b")
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
     chroma_path: str = os.getenv("CHROMA_PATH", "./data/chroma")
     sqlite_path: str = os.getenv("SQLITE_PATH", "./data/images.db")

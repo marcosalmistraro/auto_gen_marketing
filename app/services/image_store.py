@@ -77,6 +77,23 @@ def get_image_bytes(image_id: str) -> bytes | None:
     return row["raw_bytes"] if row else None
 
 
+def delete_company_images(company_id: str) -> int:
+    """Delete all images for a company. Returns count deleted."""
+    with _get_conn() as conn:
+        cur = conn.execute("DELETE FROM images WHERE company_id = ?", (company_id,))
+        conn.commit()
+    return cur.rowcount
+
+
+def get_image_counts() -> dict[str, int]:
+    """Return {company_id: image_count} for all companies."""
+    with _get_conn() as conn:
+        rows = conn.execute(
+            "SELECT company_id, COUNT(*) as cnt FROM images GROUP BY company_id"
+        ).fetchall()
+    return {row["company_id"]: row["cnt"] for row in rows}
+
+
 def get_image_with_ext(image_id: str) -> tuple[bytes, str] | None:
     """Fetch raw bytes and file extension for a specific image by ID."""
     with _get_conn() as conn:
