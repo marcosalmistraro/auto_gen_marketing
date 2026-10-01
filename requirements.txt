@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pymupdf
+sentence-transformers
+chromadb
+groq
+pydantic
+pydantic-settings
+Pillow
+aiofiles
+python-dotenv
