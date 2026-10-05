@@ -38,7 +38,7 @@ with st.sidebar:
 tailored B2B articles by reading the actual documents of both companies involved.
 
 Upload PDFs for a **sender** (the company pitching) and a **receiver** (the target client).
-The system extracts text, tables, and images, builds a vector index, then uses a Llama LLM
+The system extracts text, tables, and images, builds a vector index, then uses a Qwen LLM
 via Groq to generate a structured, on-brand article - not a generic template.
 """)
 
@@ -46,7 +46,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
         st.markdown("""
 1. Upload PDFs for a sender and receiver company
 2. Text, tables and images are extracted from each PDF
-3. Images are described by a vision LLM (Llama 3.2 11B)
+3. Images are described by a vision LLM (Qwen 3.8 27B)
 4. Everything is embedded into a ChromaDB vector store, keyed by company ID
 5. Generate a tailored article - full context or RAG depending on token volume
 6. Output is structured JSON ready for a layout template
@@ -54,8 +54,8 @@ via Groq to generate a structured, on-brand article - not a generic template.
 
     with st.expander("What is the stack?"):
         st.markdown("""
-- **LLM** Llama 3.3 70B via Groq
-- **Vision** Llama 3.2 11B Vision
+- **LLM** Qwen 3.8 27B via Groq
+- **Vision** Qwen 3.8 27B via Groq
 - **Embeddings** all-MiniLM-L6-v2
 - **Vector store** ChromaDB
 - **Image store** SQLite
@@ -91,7 +91,7 @@ st.caption("Upload company PDFs, then generate a tailored B2B article.")
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 companies_data = fetch_companies(API_URL)
 
-tab_upload, tab_generate, tab_companies = st.tabs(["Upload", "Generate", "Indexed companies"])
+tab_upload, tab_generate, tab_companies, tab_stack = st.tabs(["Upload", "Generate", "Indexed companies", "Stack"])
 
 # ══════════════════════════════════════════
 # UPLOAD TAB
@@ -202,11 +202,7 @@ with tab_generate:
             height=80,
         )
 
-        a_col1, a_col2 = st.columns(2)
-        with a_col1:
-            max_words = st.slider("Max words", 100, 600, 300, 50)
-        with a_col2:
-            theme_color = st.color_picker("Theme colour", value="#E8360A")
+        max_words = st.slider("Max words", 100, 600, 300, 50)
 
         submit_generate = st.form_submit_button("Generate article", type="primary", use_container_width=True)
 
@@ -225,7 +221,7 @@ with tab_generate:
                             "receiver_id": receiver_id,
                             "prompt": prompt,
                             "max_words": max_words,
-                            "theme_color": theme_color,
+                            "theme_color": "#E8360A",
                         },
                         timeout=60,
                     )
@@ -287,6 +283,7 @@ with tab_generate:
         with tab_json:
             st.code(json.dumps(result, indent=2), language="json")
 
+        st.divider()
         st.download_button(
             label="Download JSON",
             data=json.dumps(result, indent=2),
@@ -342,3 +339,76 @@ with tab_companies:
                         st.error(str(e))
                     fetch_companies.clear()
                     st.rerun()
+
+# ══════════════════════════════════════════
+# STACK TAB
+# ══════════════════════════════════════════
+with tab_stack:
+    st.subheader("Local stack")
+    st.caption(
+        "This prototype runs fully locally. "
+        "The AWS architecture deck shows the production-grade equivalent of each component."
+    )
+    st.divider()
+
+    STACK = [
+        {
+            "layer": "API",
+            "component": "FastAPI",
+            "role": "REST layer exposing `/upload`, `/generate`, `/companies`, `/image`.",
+            "aws_equiv": "API Gateway + Lambda",
+        },
+        {
+            "layer": "PDF extraction",
+            "component": "PyMuPDF",
+            "role": "Extracts text blocks, tables (as Markdown), and raw image bytes from PDFs.",
+            "aws_equiv": "Amazon Textract",
+        },
+        {
+            "layer": "Embeddings",
+            "component": "all-MiniLM-L6-v2",
+            "role": "Encodes text and image descriptions into 384-dimensional vectors for semantic search.",
+            "aws_equiv": "Amazon Bedrock - Titan Embeddings v2",
+        },
+        {
+            "layer": "Vector store",
+            "component": "ChromaDB",
+            "role": "Stores and queries embedding vectors per company; supports full-context and RAG retrieval modes.",
+            "aws_equiv": "Amazon OpenSearch Serverless",
+        },
+        {
+            "layer": "Image store",
+            "component": "SQLite",
+            "role": "Persists raw image bytes and vision descriptions keyed by UUID.",
+            "aws_equiv": "Amazon S3 + DynamoDB metadata",
+        },
+        {
+            "layer": "Vision LLM",
+            "component": "Qwen 3.8 27B via Groq",
+            "role": "Generates a 2-3 sentence description of each extracted image for semantic indexing.",
+            "aws_equiv": "Amazon Bedrock - Claude 3 Haiku (multimodal)",
+        },
+        {
+            "layer": "Generation LLM",
+            "component": "Qwen 3.8 27B via Groq",
+            "role": "Produces a structured JSON article (title, sections, CTA, image refs) grounded in retrieved context.",
+            "aws_equiv": "Amazon Bedrock - Claude 3 Sonnet",
+        },
+        {
+            "layer": "Frontend",
+            "component": "Streamlit",
+            "role": "Upload, generate, and inspect indexed companies through a browser UI.",
+            "aws_equiv": "React / Next.js on CloudFront + S3",
+        },
+    ]
+
+    for item in STACK:
+        with st.container(border=True):
+            col_info, col_aws = st.columns([3, 2])
+            with col_info:
+                st.markdown(f"**{item['component']}**")
+                st.caption(f"Layer: {item['layer']}")
+                st.markdown(item["role"])
+            with col_aws:
+                st.markdown("**AWS equivalent**")
+                st.caption(item["aws_equiv"])

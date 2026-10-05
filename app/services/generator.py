@@ -29,12 +29,6 @@ def describe_image(img_bytes: bytes, ext: str) -> str:
                     "role": "user",
                     "content": [
                         {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:{media_type};base64,{b64}"
-                            },
-                        },
-                        {
                             "type": "text",
                             "text": (
                                 "Describe this image in 2-3 sentences for use in a B2B marketing context. "
@@ -42,10 +36,16 @@ def describe_image(img_bytes: bytes, ext: str) -> str:
                                 "Be factual and concise."
                             ),
                         },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{media_type};base64,{b64}"
+                            },
+                        },
                     ],
                 }
             ],
-            max_tokens=200,
+            max_completion_tokens=200,
         )
         content = response.choices[0].message.content or ""
         # Strip Qwen chain-of-thought blocks if present
