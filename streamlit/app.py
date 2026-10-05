@@ -202,7 +202,11 @@ with tab_generate:
             height=80,
         )
 
-        max_words = st.slider("Max words", 100, 600, 300, 50)
+        a_col1, a_col2 = st.columns(2)
+        with a_col1:
+            max_words = st.slider("Max words", 100, 600, 300, 50)
+        with a_col2:
+            theme_color = st.text_input("Theme color (hex)", value="#E8360A", placeholder="#E8360A")
 
         submit_generate = st.form_submit_button("Generate article", type="primary", use_container_width=True)
 
@@ -221,7 +225,7 @@ with tab_generate:
                             "receiver_id": receiver_id,
                             "prompt": prompt,
                             "max_words": max_words,
-                            "theme_color": "#E8360A",
+                            "theme_color": theme_color or "#E8360A",
                         },
                         timeout=60,
                     )
