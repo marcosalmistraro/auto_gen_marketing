@@ -59,7 +59,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
 - **Embeddings** BGE-small-en via fastembed
 - **Vector store** ChromaDB
 - **Image store** SQLite
-- **API** FastAPI on Railway
+- **API** FastAPI on Render
 """)
 
     st.divider()

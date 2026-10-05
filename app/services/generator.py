@@ -10,13 +10,12 @@ client = Groq(api_key=settings.groq_api_key)
 
 def describe_image(img_bytes: bytes, ext: str) -> str:
     """
-    Use Llama 3.2 Vision to generate a text description of an image.
+    Use Qwen vision to generate a text description of an image.
 
     Why convert images to text descriptions instead of using multimodal embeddings?
     - Descriptions live in the same vector space as text chunks
     - No need to align separate embedding spaces
     - Output is human-readable and auditable
-    - Llama 3.2 Vision is free on Groq
     """
     b64 = base64.b64encode(img_bytes).decode("utf-8")
     media_type = f"image/{'jpeg' if ext in ('jpg', 'jpeg') else ext}"
@@ -70,7 +69,7 @@ def generate_article(
     retrieval_mode: str,
 ) -> ArticleJSON:
     """
-    Generate a structured article using Llama 3.3 70B.
+    Generate a structured article using Qwen 3.8 27B.
 
     Two-layer output enforcement:
     1. Groq JSON mode — guarantees syntactically valid JSON, no markdown fences
