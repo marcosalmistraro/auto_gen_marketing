@@ -16,13 +16,7 @@ from app.utils.chunker import chunk_text, estimate_tokens
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Runs once at startup before the API accepts requests.
-    - Initialises SQLite tables
-    - Pre-loads the embedding model so the first request is not slow
-    """
     init_db()
-    _get_embedder()
     yield
 
 
