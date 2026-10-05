@@ -8,10 +8,9 @@ load_dotenv()
 
 class Settings:
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
-    hf_token: str = os.getenv("HF_TOKEN", "")
     llm_model: str = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
     vision_model: str = os.getenv("VISION_MODEL", "qwen/qwen3.8-27b")
-    embedding_model: str = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
     chroma_path: str = os.getenv("CHROMA_PATH", "./data/chroma")
     sqlite_path: str = os.getenv("SQLITE_PATH", "./data/images.db")
     max_chunk_tokens: int = int(os.getenv("MAX_CHUNK_TOKENS", "512"))

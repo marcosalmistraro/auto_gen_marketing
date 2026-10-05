@@ -1,9 +1,10 @@
 import chromadb
-import requests as http_requests
 from chromadb.config import Settings as ChromaSettings
+from fastembed import TextEmbedding
 from app.config import settings
 
 _chroma_client = None
+_embedding_model = None
 
 
 def _get_client() -> chromadb.Client:
@@ -16,26 +17,16 @@ def _get_client() -> chromadb.Client:
     return _chroma_client
 
 
-def _get_embedder():
-    return None  # kept for import compatibility; embeddings go via HF API
+def _get_embedder() -> TextEmbedding:
+    global _embedding_model
+    if _embedding_model is None:
+        _embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+    return _embedding_model
 
 
 def _embed(texts: list[str]) -> list[list[float]]:
-    url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{settings.embedding_model}"
-    headers = {"Authorization": f"Bearer {settings.hf_token}"}
-    response = http_requests.post(url, headers=headers, json={"inputs": texts, "options": {"wait_for_model": True}})
-    response.raise_for_status()
-    result = response.json()
-    # HF returns per-token embeddings — mean-pool to get sentence embedding
-    import numpy as np
-    pooled = []
-    for item in result:
-        arr = np.array(item)
-        if arr.ndim == 2:
-            pooled.append(arr.mean(axis=0).tolist())
-        else:
-            pooled.append(arr.tolist())
-    return pooled
+    embedder = _get_embedder()
+    return [emb.tolist() for emb in embedder.embed(texts)]
 
 
 def _collection_name(company_id: str) -> str:

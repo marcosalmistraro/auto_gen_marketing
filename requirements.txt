@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 python-multipart
 pymupdf
-numpy
+fastembed
 chromadb
 groq
 pydantic

@@ -56,7 +56,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
         st.markdown("""
 - **LLM** Qwen 3.8 27B via Groq
 - **Vision** Qwen 3.8 27B via Groq
-- **Embeddings** all-MiniLM-L6-v2 via HuggingFace Inference API
+- **Embeddings** BGE-small-en via fastembed
 - **Vector store** ChromaDB
 - **Image store** SQLite
 - **API** FastAPI on Railway
@@ -297,7 +297,7 @@ with tab_generate:
 with tab_companies:
     st.subheader("Indexed companies")
     st.caption(
-        "**Vector store** - each company's text and table chunks are embedded with `all-MiniLM-L6-v2` and stored in ChromaDB, keyed by company ID.  \n"
+        "**Vector store** - each company's text and table chunks are embedded with `BGE-small-en` (fastembed) and stored in ChromaDB, keyed by company ID.  \n"
         "**Images** - extracted from PDFs, described by a vision LLM (Qwen 3.8 27B), and stored in SQLite; their descriptions are also embedded for semantic retrieval.  \n"
         "**Chunk counts** - text, table and image-description chunks are tracked separately so you can verify coverage before generating."
     )
@@ -366,7 +366,7 @@ with tab_stack:
         },
         {
             "layer": "Embeddings",
-            "component": "all-MiniLM-L6-v2 via HuggingFace Inference API",
+            "component": "BGE-small-en via fastembed",
             "role": "Encodes text and image descriptions into 384-dimensional vectors for semantic search.",
             "aws_equiv": "Amazon Bedrock - Titan Embeddings v2",
         },
