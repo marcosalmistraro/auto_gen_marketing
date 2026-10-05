@@ -202,7 +202,7 @@ with tab_generate:
             height=80,
         )
 
-        a_col1, a_col2 = st.columns(2)
+        a_col1, a_col2 = st.columns([5, 1])
         with a_col1:
             max_words = st.slider("Max words", 100, 600, 300, 50)
         with a_col2:
