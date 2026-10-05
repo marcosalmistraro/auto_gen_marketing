@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 python-multipart
 pymupdf
-sentence-transformers
+numpy
 chromadb
 groq
 pydantic
@@ -10,3 +10,4 @@ pydantic-settings
 Pillow
 aiofiles
 python-dotenv
+requests

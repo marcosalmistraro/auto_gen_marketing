@@ -1,10 +1,9 @@
 import chromadb
+import requests as http_requests
 from chromadb.config import Settings as ChromaSettings
-from sentence_transformers import SentenceTransformer
 from app.config import settings
 
 _chroma_client = None
-_embedding_model = None
 
 
 def _get_client() -> chromadb.Client:
@@ -17,13 +16,26 @@ def _get_client() -> chromadb.Client:
     return _chroma_client
 
 
-def _get_embedder() -> SentenceTransformer:
-    global _embedding_model
-    if _embedding_model is None:
-        # 22M params, runs on CPU, ~10ms per chunk
-        # Good enough for standard English business text
-        _embedding_model = SentenceTransformer(settings.embedding_model)
-    return _embedding_model
+def _get_embedder():
+    return None  # kept for import compatibility; embeddings go via HF API
+
+
+def _embed(texts: list[str]) -> list[list[float]]:
+    url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{settings.embedding_model}"
+    headers = {"Authorization": f"Bearer {settings.hf_token}"}
+    response = http_requests.post(url, headers=headers, json={"inputs": texts, "options": {"wait_for_model": True}})
+    response.raise_for_status()
+    result = response.json()
+    # HF returns per-token embeddings — mean-pool to get sentence embedding
+    import numpy as np
+    pooled = []
+    for item in result:
+        arr = np.array(item)
+        if arr.ndim == 2:
+            pooled.append(arr.mean(axis=0).tolist())
+        else:
+            pooled.append(arr.tolist())
+    return pooled
 
 
 def _collection_name(company_id: str) -> str:
@@ -41,10 +53,9 @@ def store_chunks(
         return 0
 
     client = _get_client()
-    embedder = _get_embedder()
     collection = client.get_or_create_collection(name=_collection_name(company_id))
 
-    embeddings = embedder.encode(chunks, show_progress_bar=False).tolist()
+    embeddings = _embed(chunks)
 
     existing = collection.count()
     ids = [f"{chunk_type}_{existing + i}" for i in range(len(chunks))]
@@ -74,14 +85,13 @@ def retrieve_chunks(
     chunk_type: str = None,
 ) -> list[str]:
     client = _get_client()
-    embedder = _get_embedder()
 
     try:
         collection = client.get_collection(name=_collection_name(company_id))
     except Exception:
         return []
 
-    query_embedding = embedder.encode([query], show_progress_bar=False).tolist()
+    query_embedding = _embed([query])
 
     where = {"company_id": company_id}
     if chunk_type:

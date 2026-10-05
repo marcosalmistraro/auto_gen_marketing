@@ -46,7 +46,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
         st.markdown("""
 1. Upload PDFs for a sender and receiver company
 2. Text, tables and images are extracted from each PDF
-3. Images are described by a vision LLM (Qwen 3.8 27B)
+3. Images are described by a vision LLM (Qwen 3.8 27B via Groq)
 4. Everything is embedded into a ChromaDB vector store, keyed by company ID
 5. Generate a tailored article - full context or RAG depending on token volume
 6. Output is structured JSON ready for a layout template
@@ -56,7 +56,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
         st.markdown("""
 - **LLM** Qwen 3.8 27B via Groq
 - **Vision** Qwen 3.8 27B via Groq
-- **Embeddings** all-MiniLM-L6-v2
+- **Embeddings** all-MiniLM-L6-v2 via HuggingFace Inference API
 - **Vector store** ChromaDB
 - **Image store** SQLite
 - **API** FastAPI on Railway
@@ -65,7 +65,7 @@ via Groq to generate a structured, on-brand article - not a generic template.
     st.divider()
 
     try:
-        r = requests.get(f"{API_URL}/health", timeout=3)
+        r = requests.get(f"{API_URL}/health", timeout=15)
         if r.status_code == 200:
             st.success("API connected")
         else:
@@ -366,7 +366,7 @@ with tab_stack:
         },
         {
             "layer": "Embeddings",
-            "component": "all-MiniLM-L6-v2",
+            "component": "all-MiniLM-L6-v2 via HuggingFace Inference API",
             "role": "Encodes text and image descriptions into 384-dimensional vectors for semantic search.",
             "aws_equiv": "Amazon Bedrock - Titan Embeddings v2",
         },
