@@ -8,6 +8,30 @@ from app.models.schemas import ArticleJSON, ArticleSection, ImagePlaceholder
 client = Groq(api_key=settings.groq_api_key)
 
 
+def _strict_schema(model: type) -> dict:
+    """
+    Adapt a Pydantic JSON schema to Groq's strict json_schema requirements:
+    every object must have additionalProperties=false and list all properties
+    as required, with no default keywords. Recurses into nested $defs.
+    """
+    schema = model.model_json_schema()
+
+    def _walk(node: dict) -> None:
+        if node.get("type") == "object" and "properties" in node:
+            node["additionalProperties"] = False
+            node["required"] = list(node["properties"].keys())
+            for prop in node["properties"].values():
+                prop.pop("default", None)
+                _walk(prop)
+        if "items" in node and isinstance(node["items"], dict):
+            _walk(node["items"])
+
+    for definition in schema.get("$defs", {}).values():
+        _walk(definition)
+    _walk(schema)
+    return schema
+
+
 def describe_image(img_bytes: bytes, ext: str) -> str:
     """
     Use Qwen vision to generate a text description of an image.
@@ -134,7 +158,14 @@ Respond with ONLY this JSON structure:
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        response_format={"type": "json_object"},
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "article",
+                "strict": True,
+                "schema": _strict_schema(ArticleJSON),
+            },
+        },
         max_tokens=1500,
         temperature=0.7,
     )
