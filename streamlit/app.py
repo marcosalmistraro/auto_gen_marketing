@@ -179,20 +179,17 @@ with tab_generate:
 
     sender_ids   = [c["company_id"] for c in companies_data if c["role"] == "sender"]
     receiver_ids = [c["company_id"] for c in companies_data if c["role"] == "receiver"]
-    all_ids      = [c["company_id"] for c in companies_data]
 
     with st.form("generate_form"):
         g_col1, g_col2 = st.columns(2)
         with g_col1:
-            opts = sender_ids or all_ids
-            if opts:
-                sender_id = st.selectbox("Sender", opts)
+            if sender_ids:
+                sender_id = st.selectbox("Sender", sender_ids)
             else:
                 sender_id = st.text_input("Sender ID", placeholder="Upload a sender PDF first")
         with g_col2:
-            opts = receiver_ids or all_ids
-            if opts:
-                receiver_id = st.selectbox("Receiver", opts)
+            if receiver_ids:
+                receiver_id = st.selectbox("Receiver", receiver_ids)
             else:
                 receiver_id = st.text_input("Receiver ID", placeholder="Upload a receiver PDF first")
 
