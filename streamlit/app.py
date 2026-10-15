@@ -105,6 +105,9 @@ with tab_upload:
         "**Company ID** - a short slug used to link uploaded context to article generation. Upload multiple PDFs under the same ID to enrich the index."
     )
 
+    if st.session_state.get("upload_success"):
+        st.success(st.session_state.pop("upload_success"))
+
     with st.form("upload_form"):
         company_id = st.text_input("Company ID", placeholder="e.g. acme-ai")
         role = st.radio("Role", options=["sender", "receiver"], horizontal=True)
@@ -145,18 +148,18 @@ with tab_upload:
                 for err in errors:
                     st.error(err)
             else:
-                st.success(
+                if "uploads" not in st.session_state:
+                    st.session_state.uploads = []
+                entry = {"company_id": company_id, "role": role}
+                if entry not in st.session_state.uploads:
+                    st.session_state.uploads.append(entry)
+
+                st.session_state["upload_success"] = (
                     f"{len(uploaded_files)} PDF(s) processed for {company_id} ({role}) - "
                     f"{total_chunks} chunks embedded · {total_images} images stored"
                 )
                 fetch_companies.clear()
-
-            if "uploads" not in st.session_state:
-                st.session_state.uploads = []
-            if not errors:
-                entry = {"company_id": company_id, "role": role}
-                if entry not in st.session_state.uploads:
-                    st.session_state.uploads.append(entry)
+                st.rerun()
 
     if st.session_state.get("uploads"):
         st.divider()
