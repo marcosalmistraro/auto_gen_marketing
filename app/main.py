@@ -8,7 +8,7 @@ from app.models.schemas import (
     CompanyRole, UploadResponse, GenerateRequest, GenerateResponse
 )
 from app.services.pdf_extractor import extract_pdf
-from app.services.vector_store import store_chunks, retrieve_chunks, get_all_chunks, list_companies, delete_company, _get_embedder
+from app.services.vector_store import store_chunks, retrieve_chunks, get_all_chunks, list_companies, delete_company
 from app.services.image_store import init_db, store_image, get_images_for_company, get_image_counts, delete_company_images, get_image_with_ext
 from app.services.generator import describe_image, generate_article
 from app.utils.chunker import chunk_text, estimate_tokens

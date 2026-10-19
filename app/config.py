@@ -17,9 +17,8 @@ class Settings:
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "50"))
     rag_threshold_tokens: int = int(os.getenv("RAG_THRESHOLD_TOKENS", "80000"))
 
-    def __post_init__(self):
-        if not self.groq_api_key:
-            raise ValueError("GROQ_API_KEY is required")
-
 
 settings = Settings()
+
+if not settings.groq_api_key:
+    raise ValueError("GROQ_API_KEY is required")

@@ -3,7 +3,7 @@ import re
 import base64
 from groq import Groq
 from app.config import settings
-from app.models.schemas import ArticleJSON, ArticleSection, ImagePlaceholder
+from app.models.schemas import ArticleJSON
 
 client = Groq(api_key=settings.groq_api_key)
 

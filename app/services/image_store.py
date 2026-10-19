@@ -67,16 +67,6 @@ def get_images_for_company(company_id: str) -> list[dict]:
     return [dict(row) for row in rows]
 
 
-def get_image_bytes(image_id: str) -> bytes | None:
-    """Fetch raw bytes for a specific image by ID."""
-    with _get_conn() as conn:
-        row = conn.execute(
-            "SELECT raw_bytes FROM images WHERE id = ?",
-            (image_id,),
-        ).fetchone()
-    return row["raw_bytes"] if row else None
-
-
 def delete_company_images(company_id: str) -> int:
     """Delete all images for a company. Returns count deleted."""
     with _get_conn() as conn:

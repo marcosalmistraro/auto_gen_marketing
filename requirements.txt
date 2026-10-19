@@ -6,8 +6,5 @@ fastembed
 chromadb
 groq
 pydantic
-pydantic-settings
 Pillow
-aiofiles
 python-dotenv
-requests

@@ -20,7 +20,7 @@ def _get_client() -> chromadb.Client:
 def _get_embedder() -> TextEmbedding:
     global _embedding_model
     if _embedding_model is None:
-        _embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        _embedding_model = TextEmbedding(model_name=settings.embedding_model)
     return _embedding_model
 
 
@@ -125,7 +125,7 @@ def list_companies() -> list[dict]:
 
     result = []
     for col in collections:
-        name = col.name if isinstance(col, str) else col.name
+        name = col if isinstance(col, str) else col.name
         if not name.startswith("company_"):
             continue
         try:

@@ -1,5 +1,4 @@
 import pymupdf as fitz
-import base64
 from dataclasses import dataclass, field
 
 
@@ -90,8 +89,3 @@ def _table_to_markdown(rows: list[list]) -> str:
         lines.append("| " + " | ".join(row) + " |")
 
     return "\n".join(lines)
-
-
-def image_to_base64(img_bytes: bytes, ext: str) -> str:
-    """Convert raw image bytes to base64 for vision LLM API calls."""
-    return base64.b64encode(img_bytes).decode("utf-8")
