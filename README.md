@@ -158,7 +158,7 @@ docker run -p 8000:8000 --env-file .env marketing-collateral-api
 
 ## Design Notes
 
-Rationale for the main technical choices - PyMuPDF over pdfplumber/pypdf, SQLite for image storage, ChromaDB for vectors, vision-LLM descriptions over multimodal (CLIP) embeddings, and the two-layer JSON output enforcement - is documented in [`INTERVIEW_NOTES.md`](./INTERVIEW_NOTES.md).
+Rationale for the main technical choices - PyMuPDF over pdfplumber/pypdf, SQLite for image storage, ChromaDB for vectors, vision-LLM descriptions over multimodal (CLIP) embeddings, and the two-layer JSON output enforcement - is documented in [`DESIGN_NOTES.md`](./DESIGN_NOTES.md).
 
 ## License
 

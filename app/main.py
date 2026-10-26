@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="ML6 Marketing Collateral API",
+    title="Marketing Collateral API",
     description="Automated B2B marketing article generation from company PDFs",
     version="1.0.0",
     lifespan=lifespan,
