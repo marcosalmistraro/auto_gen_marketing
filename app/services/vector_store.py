@@ -30,7 +30,7 @@ def _embed(texts: list[str]) -> list[list[float]]:
 
 
 def _collection_name(company_id: str) -> str:
-    # One collection per company — clean separation, no cross-company bleed
+    # One collection per company - clean separation, no cross-company bleed
     return f"company_{company_id.replace('-', '_')}"
 
 

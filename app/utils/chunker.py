@@ -26,6 +26,6 @@ def chunk_text(text: str, chunk_size: int = None, overlap: int = None) -> list[s
 def estimate_tokens(text: str) -> int:
     """
     Rough token estimate: 1 token ≈ 0.75 words.
-    Used to decide full-context vs RAG — not for billing.
+    Used to decide full-context vs RAG - not for billing.
     """
     return int(len(text.split()) / 0.75)

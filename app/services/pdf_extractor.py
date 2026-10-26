@@ -45,7 +45,7 @@ def extract_pdf(file_bytes: bytes) -> ExtractedPDF:
             img_bytes = base_image["image"]
             ext = base_image["ext"]
 
-            # Skip tiny images — icons, bullets, decorations
+            # Skip tiny images - icons, bullets, decorations
             # Threshold: 5KB
             if len(img_bytes) < 5000:
                 continue

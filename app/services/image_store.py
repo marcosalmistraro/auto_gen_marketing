@@ -54,7 +54,7 @@ def store_image(
 
 
 def get_images_for_company(company_id: str) -> list[dict]:
-    """Get all image metadata for a company — no raw bytes."""
+    """Get all image metadata for a company - no raw bytes."""
     with _get_conn() as conn:
         rows = conn.execute(
             """

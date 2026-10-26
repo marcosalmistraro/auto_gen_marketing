@@ -95,7 +95,7 @@ The backend reads configuration from environment variables (loaded from a local 
 
 | Variable | Default | Description |
 |---|---|---|
-| `GROQ_API_KEY` | — (required) | Groq API key |
+| `GROQ_API_KEY` | - (required) | Groq API key |
 | `LLM_MODEL` | `qwen/qwen3.8-27b` | Model used for article generation |
 | `VISION_MODEL` | `qwen/qwen3.8-27b` | Model used for image descriptions |
 | `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | Embedding model name |
@@ -158,7 +158,7 @@ docker run -p 8000:8000 --env-file .env marketing-collateral-api
 
 ## Design Notes
 
-Rationale for the main technical choices — PyMuPDF over pdfplumber/pypdf, SQLite for image storage, ChromaDB for vectors, vision-LLM descriptions over multimodal (CLIP) embeddings, and the two-layer JSON output enforcement — is documented in [`INTERVIEW_NOTES.md`](./INTERVIEW_NOTES.md).
+Rationale for the main technical choices - PyMuPDF over pdfplumber/pypdf, SQLite for image storage, ChromaDB for vectors, vision-LLM descriptions over multimodal (CLIP) embeddings, and the two-layer JSON output enforcement - is documented in [`INTERVIEW_NOTES.md`](./INTERVIEW_NOTES.md).
 
 ## License
 

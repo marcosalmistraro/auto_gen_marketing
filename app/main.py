@@ -116,7 +116,7 @@ async def generate(req: GenerateRequest):
             detail=f"No context found for '{req.sender_id}' or '{req.receiver_id}'. Upload PDFs first."
         )
 
-    # 2. Hybrid decision — full context or RAG
+    # 2. Hybrid decision - full context or RAG
     sender_full_text = "\n\n".join(sender_all)
     receiver_full_text = "\n\n".join(receiver_all)
     total_tokens = estimate_tokens(sender_full_text + receiver_full_text)

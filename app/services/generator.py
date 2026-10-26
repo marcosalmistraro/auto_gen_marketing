@@ -76,7 +76,7 @@ def describe_image(img_bytes: bytes, ext: str) -> str:
         return content.strip()
 
     except Exception as e:
-        # Vision call failed — return minimal description rather than crashing
+        # Vision call failed - return minimal description rather than crashing
         return f"Image from document (description unavailable: {str(e)[:50]})"
 
 
@@ -96,8 +96,8 @@ def generate_article(
     Generate a structured article using Qwen 3.8 27B.
 
     Two-layer output enforcement:
-    1. Groq JSON mode — guarantees syntactically valid JSON, no markdown fences
-    2. Pydantic validation — guarantees JSON matches ArticleJSON schema
+    1. Groq JSON mode - guarantees syntactically valid JSON, no markdown fences
+    2. Pydantic validation - guarantees JSON matches ArticleJSON schema
     """
 
     # Build image context for the prompt
@@ -111,7 +111,7 @@ def generate_article(
 
     system_prompt = """You are an expert B2B marketing copywriter.
 You generate structured JSON articles that map directly into publishing layout templates.
-You always respond with valid JSON only — no markdown, no preamble, no explanation.
+You always respond with valid JSON only - no markdown, no preamble, no explanation.
 You are factual, professional, and tailor content to bridge the sender's offerings with the receiver's industry needs."""
 
     user_prompt = f"""Generate a B2B marketing article based on the following context.
@@ -173,9 +173,9 @@ Respond with ONLY this JSON structure:
     raw = response.choices[0].message.content
     data = json.loads(raw)
 
-    # Compute word count ourselves — don't trust the LLM to count correctly
+    # Compute word count ourselves - don't trust the LLM to count correctly
     all_body_text = " ".join(s.get("body", "") for s in data.get("sections", []))
     data["word_count"] = len(all_body_text.split())
 
-    # Pydantic validates the schema — raises ValidationError if something is wrong
+    # Pydantic validates the schema - raises ValidationError if something is wrong
     return ArticleJSON(**data)
