@@ -5,3 +5,5 @@ __pycache__/
 *.pyc
 data/*
 !data/.gitkeep
+# Streamlit secrets - set these in the Streamlit Cloud dashboard, not in git
+streamlit/.streamlit/secrets.toml

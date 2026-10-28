@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets - never bake into an image
+.env
+
+# Local runtime data (chroma index, sqlite images db)
+data/
+
+# Git history
+.git/
+.gitignore
+
+# Docs
+README.md
+DESIGN_NOTES.md
+License
+
+# Dev-only
+streamlit/
